@@ -321,6 +321,7 @@ class TestJWT:
         with pytest.raises(InvalidIssuedAtError):
             jwt.decode(example_jwt, "secret", algorithms=["HS256"])
 
+    @pytest.mark.filterwarnings("ignore::jwt.warnings.RemovedInPyjwt3Warning")
     def test_decode_raises_exception_if_iat_is_greater_than_now(
         self, jwt: PyJWT, payload: dict[str, object]
     ) -> None:
@@ -330,6 +331,22 @@ class TestJWT:
 
         with pytest.raises(ImmatureSignatureError):
             jwt.decode(jwt_message, secret, algorithms=["HS256"])
+
+    def test_decode_warns_if_iat_is_greater_than_now(
+        self, jwt: PyJWT, payload: dict[str, object]
+    ) -> None:
+        payload["iat"] = utc_timestamp() + 10
+        secret = "secret"
+        jwt_message = jwt.encode(payload, secret)
+
+        with pytest.warns(RemovedInPyjwt3Warning) as record:
+            with pytest.raises(ImmatureSignatureError):
+                jwt.decode(jwt_message, secret, algorithms=["HS256"])
+        deprecation_warnings = [
+            w for w in record if issubclass(w.category, RemovedInPyjwt3Warning)
+        ]
+        assert len(deprecation_warnings) == 1
+        assert "verify_iat" in str(deprecation_warnings[0].message)
 
     def test_decode_works_if_iat_is_str_of_a_number(
         self, jwt: PyJWT, payload: dict[str, object]

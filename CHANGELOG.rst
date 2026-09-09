@@ -7,6 +7,14 @@ This project adheres to `Semantic Versioning <https://semver.org/>`__.
 `Unreleased <https://github.com/jpadilla/pyjwt/compare/2.13.0...HEAD>`__
 ------------------------------------------------------------------------
 
+Deprecated
+~~~~~~~~~~
+
+- Rejecting a token because its ``iat`` claim is in the future now emits a
+  ``RemovedInPyjwt3Warning``. The ``verify_iat`` option will default to
+  ``False`` in PyJWT 3, as requested by @vergenzt in
+  `#939 <https://github.com/jpadilla/pyjwt/issues/939>`__.
+
 `v2.13.0 <https://github.com/jpadilla/pyjwt/compare/2.12.1...2.13.0>`__
 -----------------------------------------------------------------------
 

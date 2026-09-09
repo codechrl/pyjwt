@@ -480,6 +480,15 @@ class PyJWT:
                 "Issued At claim (iat) must be an integer."
             ) from None
         if iat > (now + leeway):
+            warnings.warn(
+                "rejecting a token because its iat claim is in the future is "
+                "deprecated and will be removed in pyjwt version 3, where the "
+                "verify_iat option will default to False. Pass "
+                'options={"verify_iat": True} to keep this behavior, or have the '
+                "issuer set an nbf claim instead.",
+                RemovedInPyjwt3Warning,
+                stacklevel=5,
+            )
             raise ImmatureSignatureError("The token is not yet valid (iat)")
 
     def _validate_nbf(
